@@ -3,45 +3,54 @@ import { Props } from '@core/props';
 import log from '@core/log';
 import { DiscordEvent } from '@app/data/event';
 import { error } from '@core/error';
-import { Module } from '@app/discordre/module';
+import {CustomDiscordEvent} from "@app/data/custom";
 
 class Bot {
   public client: Client;
 
   constructor(modules: string[], props: Props) {
-    log.info('BOT initialization');
-    this.client = new Discord.Client();
+    log.info('BOT initialization')
+    this.client = new Discord.Client()
 
     this.client.on('ready', () => {
-      props.client = this.client;
+      props.client = this.client
 
       if (this.client.user !== null) {
-        log.info(`[bot] Logged in as ${this.client.user.tag}!`);
+        log.info(`[bot] Logged in as ${this.client.user.tag}!`)
       }
 
       modules.forEach((module) => {
-        let {default: modIndex} = require(module)
-        let mod = new modIndex(props)
-        let modFuncs = getAllFuncs(mod)
-        modFuncs.map(v => this.client.on(v, mod[v].bind(mod)))
-      });
-    });
+        const {default: modIndex} = require(module)
+        const mod = new modIndex(props)
 
-    this.client.login(process.env.DISCORD_TOKEN).catch((err) => error.fatal(`[bot] ${err.message}`));
+        let modFuncs = getAllFuncs(DiscordEvent, mod)
+        modFuncs.map(v => this.client.on(v, mod[v].bind(mod)))
+
+        // let customModFuncs = getAllFuncs(CustomDiscordEvent, mod)
+        // modFuncs.map(v => this.client.on(v, mod[v].bind(mod)))
+      })
+    })
+
+    this.client.login(process.env.DISCORD_TOKEN).catch((err) => error.fatal(`[bot] ${err.message}`))
   }
 }
 
-function getAllFuncs(toCheck: { [x: string]: any }) {
-  let props: any[] = [];
-  let obj = toCheck;
+function getAllFuncs(eventList: string[], mod: any) {
+  let props: any[] = []
+  let obj = mod
+
   do {
-    props = props.concat(Object.getOwnPropertyNames(obj));
-  } while ((obj = Object.getPrototypeOf(obj)));
+    props = props.concat(Object.getOwnPropertyNames(obj))
+  } while ((obj = Object.getPrototypeOf(obj)))
 
   return props.sort().filter(function (e, i, arr) {
-    if (!DiscordEvent.find((event) => event === e)) return false;
-    if (e != arr[i + 1] && typeof toCheck[e] == 'function') return true;
-  });
+    if (!eventList.find(event => event === e)) {
+      return false
+    }
+    if (e != arr[i + 1] && typeof mod[e] == 'function') {
+      return true
+    }
+  })
 }
 
 export default Bot;
