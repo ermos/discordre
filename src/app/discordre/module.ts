@@ -6,4 +6,8 @@ export abstract class Module {
   protected constructor(props: Props) {
     this.props = props
   }
+
+  api(): void {
+    // TODO Api Logic
+  }
 }

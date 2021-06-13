@@ -1,5 +1,4 @@
 interface DiscordreInit {
-  api?: boolean;
-  dashboard?: boolean;
-  port?: number;
+  api?: boolean
+  port?: number
 }
