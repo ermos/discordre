@@ -9,13 +9,20 @@ class Bot {
   public client: Client;
 
   constructor(modules: string[], props: Props) {
+    log.title('# Discord.js')
     log.info('BOT initialization')
-    this.client = new Discord.Client()
+
+    let config = {}
+    if(props.config.discordjs !== undefined && props.config.discordjs.config !== undefined) {
+      config = props.config.discordjs.config
+    }
+
+    this.client = new Discord.Client(config)
 
     this.client.on('ready', () => {
       props.client = this.client
 
-      if (this.client.user !== null) {
+      if(this.client.user !== null) {
         log.info(`[bot] Logged in as ${this.client.user.tag}!`)
       }
 
@@ -23,8 +30,7 @@ class Bot {
         const {default: modIndex} = require(module)
         const mod = new modIndex(props)
 
-        let modFuncs = getAllFuncs(DiscordEvent, mod)
-        modFuncs.map(v => this.client.on(v, mod[v].bind(mod)))
+        getAllFuncs(DiscordEvent, mod).map(v => this.client.on(v, mod[v].bind(mod)))
 
         // let customModFuncs = getAllFuncs(CustomDiscordEvent, mod)
         // modFuncs.map(v => this.client.on(v, mod[v].bind(mod)))

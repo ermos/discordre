@@ -5,14 +5,14 @@ import { error } from '@core/error';
 import { ConfigInterface } from '@type/pipeline/config';
 
 export default function Config(): ConfigInterface {
-  log.info('Config: looking for discordre.json from ' + path.join(process.cwd(), 'discordre.json'));
+  log.info('[config] looking for discordre.json from ' + path.join(process.cwd(), 'discordre.json'));
 
   const data = fs.readFileSync(path.join(process.cwd(), 'discordre.json'), 'utf8');
   if (!data) {
-    error.fatal('Config: discordre.json is require');
+    error.fatal('[config] discordre.json is require');
   }
 
-  log.info('Config: import configuration');
+  log.info('[config] import configuration successfully !');
 
   return JSON.parse(data.toString());
 }

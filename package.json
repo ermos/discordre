@@ -30,6 +30,8 @@
   },
   "dependencies": {
     "discord.js": "^12.5.3",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "knex": "^0.95.6",
+    "mysql": "^2.18.1"
   }
 }

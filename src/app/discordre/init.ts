@@ -7,6 +7,7 @@ import Bot from '@app/bot';
 import { ConfigInterface } from '@type/pipeline/config';
 import Pipeline from '@app/pipeline';
 import Router from "@core/router";
+import DB from "@core/db";
 
 export class Discordre {
   // private api?: API;
@@ -22,10 +23,10 @@ export class Discordre {
       return
     }
 
+
     log.title(`# ${this.config.name} modules`)
     const modules = Discordre.getModules()
 
-    log.title('# Discord.js')
     this.runDiscordJS(modules)
 
     const apiEnabled = this.config.api?.enable !== undefined ? this.config.api?.enable : false
@@ -61,7 +62,8 @@ export class Discordre {
       return;
     }
 
-    this.bot = new Bot(modules, new Props(this.config));
+    const db = new DB()
+    this.bot = new Bot(modules, new Props(this.config, db.client));
   }
 
   // Load all app modules
